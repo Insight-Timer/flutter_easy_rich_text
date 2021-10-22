@@ -5,7 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'easy_rich_text_pattern.dart';
 
 class EasyRichText extends StatelessWidget {
-  ///The orginal text
+  ///The original text
   final String text;
 
   ///The list of target strings and their styles.

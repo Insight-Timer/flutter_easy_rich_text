@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
-typedef EasyRichTextMatchBuilder = InlineSpan Function(
-    BuildContext context, RegExpMatch? match);
+typedef EasyRichTextMatchBuilder = InlineSpan Function(BuildContext context, RegExpMatch? match);
 
 class EasyRichTextPattern {
   ///target string that you want to format
@@ -50,7 +49,7 @@ class EasyRichTextPattern {
   final bool hasSpecialCharacters;
 
   ///match first, last, or all [0, 1, 'last']
-  ///defalut match all
+  ///default match all
   final dynamic matchOption;
 
   final EasyRichTextMatchBuilder? matchBuilder;
@@ -93,10 +92,8 @@ class EasyRichTextPattern {
       stringBeforeTarget: stringBeforeTarget ?? this.stringBeforeTarget,
       stringAfterTarget: stringAfterTarget ?? this.stringAfterTarget,
       matchWordBoundaries: matchWordBoundaries ?? this.matchWordBoundaries,
-      matchLeftWordBoundary:
-          matchLeftWordBoundary ?? this.matchLeftWordBoundary,
-      matchRightWordBoundary:
-          matchRightWordBoundary ?? this.matchRightWordBoundary,
+      matchLeftWordBoundary: matchLeftWordBoundary ?? this.matchLeftWordBoundary,
+      matchRightWordBoundary: matchRightWordBoundary ?? this.matchRightWordBoundary,
       superScript: superScript ?? this.superScript,
       subScript: subScript ?? this.subScript,
       style: style ?? this.style,
