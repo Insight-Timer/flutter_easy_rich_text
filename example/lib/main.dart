@@ -47,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   patternList: [
                     EasyRichTextPattern(
                       targetString: 'TM',
+                      identifier: null,
                       superScript: true,
                       stringBeforeTarget: 'Product',
                       matchWordBoundaries: false,
@@ -73,16 +74,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   ],
                 ),
 
-                ///list of targetString have same text decoration.
-                EasyRichText(
-                  "bold1 TEST bold2 TEST bold3",
-                  patternList: [
-                    EasyRichTextPattern(
-                      targetString: ['bold1', 'bold2', 'bold3'],
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    )
-                  ],
-                ),
+                // ///list of targetString have same text decoration.
+                // EasyRichText(
+                //   "bold1 TEST bold2 TEST bold3",
+                //   patternList: [
+                //     EasyRichTextPattern(
+                //       targetString: ['bold1', 'bold2', 'bold3'],
+                //       style: TextStyle(fontWeight: FontWeight.bold),
+                //     )
+                //   ],
+                // ),
 
                 //default style
                 EasyRichText(
@@ -103,10 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 EasyRichText(
                   "I want superscript font here. I want subscript here",
                   patternList: [
-                    EasyRichTextPattern(
-                        targetString: 'superscript', superScript: true),
-                    EasyRichTextPattern(
-                        targetString: 'subscript', subScript: true),
+                    EasyRichTextPattern(targetString: 'superscript', superScript: true),
+                    EasyRichTextPattern(targetString: 'subscript', subScript: true),
                   ],
                 ),
                 //conditional match

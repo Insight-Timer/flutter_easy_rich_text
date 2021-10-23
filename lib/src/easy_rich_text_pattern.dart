@@ -1,11 +1,14 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
-typedef EasyRichTextMatchBuilder = InlineSpan Function(BuildContext context, RegExpMatch? match);
+typedef EasyRichTextMatchBuilder = InlineSpan Function(
+    BuildContext context, RegExpMatch? match);
 
 class EasyRichTextPattern {
   ///target string that you want to format
-  final dynamic targetString;
+  final String internalTargetString;
+
+  final String? identifier;
 
   ///string before target string.
   ///useful when you want to format text after specified words
@@ -56,7 +59,8 @@ class EasyRichTextPattern {
 
   EasyRichTextPattern({
     Key? key,
-    required this.targetString,
+    required String targetString,
+    required this.identifier,
     this.stringBeforeTarget = '',
     this.stringAfterTarget = '',
     this.matchWordBoundaries = true,
@@ -70,10 +74,11 @@ class EasyRichTextPattern {
     this.hasSpecialCharacters = false,
     this.matchOption = 'all',
     this.matchBuilder,
-  });
+  }) : this.internalTargetString = targetString;
 
   EasyRichTextPattern copyWith({
     targetString,
+    identifier,
     stringBeforeTarget,
     stringAfterTarget,
     matchWordBoundaries,
@@ -88,12 +93,15 @@ class EasyRichTextPattern {
     matchOption,
   }) {
     return EasyRichTextPattern(
-      targetString: targetString ?? this.targetString,
+      targetString: targetString ?? this.internalTargetString,
+      identifier: identifier ?? this.identifier,
       stringBeforeTarget: stringBeforeTarget ?? this.stringBeforeTarget,
       stringAfterTarget: stringAfterTarget ?? this.stringAfterTarget,
       matchWordBoundaries: matchWordBoundaries ?? this.matchWordBoundaries,
-      matchLeftWordBoundary: matchLeftWordBoundary ?? this.matchLeftWordBoundary,
-      matchRightWordBoundary: matchRightWordBoundary ?? this.matchRightWordBoundary,
+      matchLeftWordBoundary:
+          matchLeftWordBoundary ?? this.matchLeftWordBoundary,
+      matchRightWordBoundary:
+          matchRightWordBoundary ?? this.matchRightWordBoundary,
       superScript: superScript ?? this.superScript,
       subScript: subScript ?? this.subScript,
       style: style ?? this.style,
@@ -102,5 +110,28 @@ class EasyRichTextPattern {
       hasSpecialCharacters: hasSpecialCharacters ?? this.hasSpecialCharacters,
       matchOption: matchOption ?? this.matchOption,
     );
+  }
+
+  String get internalTargetPatternStart {
+    if (identifier == null || identifier!.isEmpty) {
+      return '';
+    }
+    return '<ert_id=$identifier>';
+  }
+
+  String get internalTargetPatternEnd {
+    if (identifier == null || identifier!.isEmpty) {
+      return '';
+    }
+    return '</ert_id=$identifier>';
+  }
+
+  String get finalString {
+    if (identifier == null || identifier!.isEmpty) {
+      return internalTargetString;
+    }
+    return internalTargetPatternStart +
+        internalTargetString +
+        internalTargetPatternEnd;
   }
 }
