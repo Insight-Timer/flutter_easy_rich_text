@@ -333,7 +333,7 @@ class EasyRichText extends StatelessWidget {
         if (pattern.hasSpecialCharacters) {
           unicode = false;
           String newTargetString =
-              replaceSpecialCharacters(pattern.finalString);
+              replaceSpecialCharacters(pattern.internalTargetString);
           finalTempPatternList2
               .add(pattern.copyWith(targetString: newTargetString));
         } else {
