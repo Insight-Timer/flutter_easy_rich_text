@@ -14,6 +14,7 @@ void main() {
       patternList: [
         EasyRichTextPattern(
             targetString: 'blue',
+            identifier: '1',
             stringBeforeTarget: 'want',
             superScript: true),
       ],
@@ -30,8 +31,10 @@ void main() {
         str,
         patternList: [
           EasyRichTextPattern(
-              targetString: 'bold',
-              style: TextStyle(fontWeight: FontWeight.bold)),
+            targetString: 'bold',
+            identifier: '1',
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
         ],
       );
     }

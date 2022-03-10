@@ -8,7 +8,7 @@ import 'package:url_launcher/url_launcher.dart';
 import 'easy_rich_text_pattern.dart';
 
 class EasyRichText extends StatelessWidget {
-  ///The orginal text
+  ///The original text
   final String text;
 
   ///The list of target strings and their styles.
@@ -220,7 +220,7 @@ class EasyRichText extends StatelessWidget {
 
     patternList.asMap().forEach((index, pattern) {
       String thisRegExPattern;
-      String targetString = pattern.targetString;
+      String targetString = pattern.finalString;
       String stringBeforeTarget = pattern.stringBeforeTarget;
       String stringAfterTarget = pattern.stringAfterTarget;
 
@@ -395,21 +395,20 @@ class EasyRichText extends StatelessWidget {
     } else {
       tempPatternList.asMap().forEach((index, pattern) {
         ///if targetString is a list
-        if (pattern.targetString is List<String>) {
-          pattern.targetString.asMap().forEach((index, eachTargetString) {
-            finalTempPatternList
-                .add(pattern.copyWith(targetString: eachTargetString));
-          });
-        } else {
-          finalTempPatternList.add(pattern);
-        }
+        // if (pattern.targetPatternString is List<String>) {
+        //   pattern.targetPatternString.asMap().forEach((index, eachTargetString) {
+        //     finalTempPatternList.add(pattern.copyWith(targetString: eachTargetString));
+        //   });
+        // } else {
+        finalTempPatternList.add(pattern);
+        // }
       });
 
       finalTempPatternList.asMap().forEach((index, pattern) {
         if (pattern.hasSpecialCharacters) {
           unicode = false;
           String newTargetString =
-              replaceSpecialCharacters(pattern.targetString);
+              replaceSpecialCharacters(pattern.internalTargetString);
           finalTempPatternList2
               .add(pattern.copyWith(targetString: newTargetString));
         } else {
@@ -425,10 +424,15 @@ class EasyRichText extends StatelessWidget {
       var inlineSpan;
       int targetIndex = -1;
       RegExpMatch? match;
+      var cleanedUpString = str;
+
       if (tempPatternList.isNotEmpty) {
         finalTempPatternList2.asMap().forEach((index, pattern) {
-          String targetString = pattern.targetString;
-
+          String targetString = pattern.finalString;
+          cleanedUpString = cleanedUpString.replaceAll(
+              pattern.internalTargetPatternStart, '');
+          cleanedUpString =
+              cleanedUpString.replaceAll(pattern.internalTargetPatternEnd, '');
           //\$, match end
           RegExp targetStringExp = RegExp(
             '^$targetString\$',
@@ -454,7 +458,7 @@ class EasyRichText extends StatelessWidget {
           inlineSpan = pattern.matchBuilder!(context, match);
         } else if (urlType != null) {
           inlineSpan = TextSpan(
-            text: str,
+            text: cleanedUpString,
             recognizer: tapGestureRecognizerForUrls(str, urlType),
             style: pattern.style == null
                 ? DefaultTextStyle.of(context).style
@@ -466,7 +470,7 @@ class EasyRichText extends StatelessWidget {
             child: Transform.translate(
               offset: const Offset(0, -5),
               child: Text(
-                str,
+                cleanedUpString,
                 textScaleFactor: 0.7,
                 style: pattern.style == null
                     ? DefaultTextStyle.of(context).style
@@ -480,7 +484,7 @@ class EasyRichText extends StatelessWidget {
             child: Transform.translate(
               offset: const Offset(0, 1),
               child: Text(
-                str,
+                cleanedUpString,
                 textScaleFactor: 0.7,
                 style: pattern.style == null
                     ? DefaultTextStyle.of(context).style
@@ -490,7 +494,7 @@ class EasyRichText extends StatelessWidget {
           );
         } else {
           inlineSpan = TextSpan(
-            text: str,
+            text: cleanedUpString,
             recognizer: pattern.recognizer,
             style: pattern.style == null
                 ? DefaultTextStyle.of(context).style
@@ -499,7 +503,7 @@ class EasyRichText extends StatelessWidget {
         }
       } else {
         inlineSpan = TextSpan(
-          text: str,
+          text: cleanedUpString,
         );
       }
       textSpanList.add(inlineSpan);
