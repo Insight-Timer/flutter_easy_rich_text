@@ -77,11 +77,20 @@ class EasyRichText extends StatelessWidget {
   ///default true
   final bool caseSensitive;
 
+  /// If multiLine is enabled, then ^ and $ will match the beginning and end of a line, in addition to matching beginning and end of input, respectively.
+  final bool multiLine;
+
+  /// If dotAll is enabled, then the . pattern will match all characters, including line terminators.
+  final bool dotAll;
+
+  /// If unicode is enabled, then the pattern is treated as a Unicode pattern as described by the ECMAScript standard.
+  final bool unicode;
+
   ///selectable text, default false
   final bool selectable;
 
   ///toolbar options for selectable text
-  final ToolbarOptions? toolbarOptions;
+  final Widget Function(BuildContext, EditableTextState)? contextMenuBuilder;
 
   ///selection controls for selectable text
   final TextSelectionControls? selectionControls;
@@ -134,46 +143,58 @@ class EasyRichText extends StatelessWidget {
   ///show cursor control for selectable text
   final bool showCursor;
 
-  EasyRichText(
-    this.text, {
-    Key? key,
-    this.patternList,
-    this.defaultStyle,
-    this.textAlign = TextAlign.start,
-    this.textDirection,
-    this.softWrap = true,
-    this.overflow = TextOverflow.clip,
-    this.textScaleFactor = 1.0,
-    this.maxLines,
-    this.locale,
-    this.strutStyle,
-    this.textWidthBasis = TextWidthBasis.parent,
-    this.caseSensitive = true,
-    this.selectable = false,
-    this.toolbarOptions,
-    this.selectionControls,
-    this.scrollPhysics,
-    this.textHeightBehavior,
-    this.enableInteractiveSelection = true,
-    this.autofocus = false,
-    this.cursorRadius,
-    this.dragStartBehavior = DragStartBehavior.start,
-    this.onSelectionChanged,
-    this.selectionHeightStyle = ui.BoxHeightStyle.tight,
-    this.selectionWidthStyle = ui.BoxWidthStyle.tight,
-    this.minLines,
-    this.cursorHeight,
-    this.cursorWidth = 2.0,
-    this.cursorColor,
-    this.focusNode,
-    this.semanticsLabel,
-    this.showCursor = false,
-  });
+  /// The color to use when painting the selection.
+  ///
+  /// This is ignored if [SelectionContainer.maybeOf] returns null
+  /// in the [BuildContext] of the [Text] widget.
+  ///
+  /// If null, the ambient [DefaultSelectionStyle] is used (if any); failing
+  /// that, the selection color defaults to [DefaultSelectionStyle.defaultColor]
+  /// (semi-transparent grey).
+  final Color? selectionColor;
+
+  EasyRichText(this.text,
+      {Key? key,
+      this.patternList,
+      this.defaultStyle,
+      this.textAlign = TextAlign.start,
+      this.textDirection,
+      this.softWrap = true,
+      this.overflow = TextOverflow.clip,
+      this.textScaleFactor = 1.0,
+      this.maxLines,
+      this.locale,
+      this.strutStyle,
+      this.textWidthBasis = TextWidthBasis.parent,
+      this.caseSensitive = true,
+      this.selectable = false,
+      this.contextMenuBuilder,
+      this.selectionControls,
+      this.scrollPhysics,
+      this.textHeightBehavior,
+      this.enableInteractiveSelection = true,
+      this.autofocus = false,
+      this.cursorRadius,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.onSelectionChanged,
+      this.selectionHeightStyle = ui.BoxHeightStyle.tight,
+      this.selectionWidthStyle = ui.BoxWidthStyle.tight,
+      this.minLines,
+      this.cursorHeight,
+      this.cursorWidth = 2.0,
+      this.cursorColor,
+      this.focusNode,
+      this.semanticsLabel,
+      this.showCursor = false,
+      this.multiLine = false,
+      this.dotAll = false,
+      this.unicode = false,
+      this.selectionColor});
 
   _launchURL(String str) async {
-    String url = str;
-    if (await canLaunch(url)) {
-      await launch(url);
+    Uri url = Uri.parse(str);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
     }
   }
 
@@ -252,9 +273,13 @@ class EasyRichText extends StatelessWidget {
         wordBoundaryStringAfterTarget2 = "";
       }
 
-      bool isHan = RegExp(r"[\u4e00-\u9fa5]+",
-              caseSensitive: caseSensitive, unicode: unicode)
-          .hasMatch(targetString);
+      bool isHan = RegExp(
+        r"[\u4e00-\u9fa5]+",
+        caseSensitive: caseSensitive,
+        unicode: unicode,
+        multiLine: multiLine,
+        dotAll: dotAll,
+      ).hasMatch(targetString);
 
       bool isArabic = RegExp(r"[\u0621-\u064A]+",
               caseSensitive: caseSensitive, unicode: unicode)
@@ -287,8 +312,13 @@ class EasyRichText extends StatelessWidget {
       //modify targetString by matchWordBoundaries and wordBoundaryStringBeforeTarget settings
       thisRegExPattern =
           '($stringBeforeTargetRegex$leftBoundary$targetString$rightBoundary$stringAfterTargetRegex)';
-      RegExp exp = new RegExp(thisRegExPattern,
-          caseSensitive: caseSensitive, unicode: unicode);
+      RegExp exp = new RegExp(
+        thisRegExPattern,
+        caseSensitive: caseSensitive,
+        unicode: unicode,
+        multiLine: multiLine,
+        dotAll: dotAll,
+      );
       var allMatches = exp.allMatches(temText);
 
       //check matchOption ['all','first','last', 0, 1, 2, 3, 10]
@@ -370,6 +400,159 @@ class EasyRichText extends StatelessWidget {
     return strList;
   }
 
+  List<InlineSpan> getTextSpanList({
+    required BuildContext? context,
+    required List<String>? strList,
+    required List<EasyRichTextPattern>? finalTempPatternList2,
+    TextStyle? subTextStyle,
+  }) {
+    List<InlineSpan> textSpanList = [];
+    // nested pattern check
+    Map<int, List<EasyRichTextPattern>> patternSubset = {};
+    finalTempPatternList2!.asMap().forEach((index, pattern) {
+      finalTempPatternList2.asMap().forEach((temIndex, temPattern) {
+        if (index != temIndex) {
+          RegExp patternExp = RegExp(
+            pattern.targetString,
+            caseSensitive: caseSensitive,
+            unicode: unicode,
+            multiLine: multiLine,
+            dotAll: dotAll,
+          );
+          bool hasMatch = patternExp.hasMatch(temPattern.targetString);
+          if (hasMatch) {
+            patternSubset.update(
+              temIndex,
+              (value) {
+                value.add(pattern);
+                return value;
+              },
+              ifAbsent: () => [pattern],
+            );
+          }
+        }
+      });
+    });
+
+    strList!.forEach((str) {
+      var inlineSpan;
+      int targetIndex = -1;
+      RegExpMatch? match;
+      var cleanedUpString = str;
+
+      if (finalTempPatternList2.isNotEmpty) {
+        finalTempPatternList2.asMap().forEach((index, pattern) {
+          String targetString = pattern.finalString;
+          cleanedUpString = cleanedUpString.replaceAll(
+              pattern.internalTargetPatternStart, '');
+          cleanedUpString =
+              cleanedUpString.replaceAll(pattern.internalTargetPatternEnd, '');
+          //\$, match end
+          RegExp targetStringExp = RegExp(
+            '^$targetString\$',
+            caseSensitive: caseSensitive,
+            unicode: unicode,
+            multiLine: multiLine,
+            dotAll: dotAll,
+          );
+
+          RegExpMatch? tempMatch = targetStringExp.firstMatch(str);
+          if (tempMatch is RegExpMatch) {
+            targetIndex = index;
+            match = tempMatch;
+          }
+        });
+      }
+
+      ///If str is targetString
+      if (targetIndex > -1) {
+        var pattern = finalTempPatternList2[targetIndex];
+        // nested pattern check
+        // ABCDE, B,C => A,B,C,DE
+        if (patternSubset[targetIndex] != null) {
+          List<String> subStrList =
+              processStrList(patternSubset[targetIndex]!, str);
+          List<InlineSpan> subTextSpanList = getTextSpanList(
+            context: context,
+            strList: subStrList,
+            finalTempPatternList2: patternSubset[targetIndex]!,
+            subTextStyle: pattern.style,
+          );
+          textSpanList.addAll(subTextSpanList);
+        } else {
+          //if str is url
+          var urlType = pattern.urlType;
+
+          if (null != pattern.matchBuilder && match is RegExpMatch) {
+            inlineSpan = pattern.matchBuilder!(context!, match);
+          } else if (urlType != null) {
+            inlineSpan = TextSpan(
+              text: cleanedUpString,
+              recognizer: tapGestureRecognizerForUrls(str, urlType),
+              style: pattern.style == null
+                  ? DefaultTextStyle.of(context!).style
+                  : pattern.style,
+            );
+          } else if (pattern.superScript && !selectable) {
+            //change the target string to superscript
+            inlineSpan = WidgetSpan(
+              child: Transform.translate(
+                offset: const Offset(0, -5),
+                child: Text(
+                  cleanedUpString,
+                  textScaler: TextScaler.linear(0.7),
+                  // textScaleFactor: 0.7,
+                  style: pattern.style == null
+                      ? DefaultTextStyle.of(context!).style
+                      : pattern.style,
+                ),
+              ),
+            );
+          } else if (pattern.subScript && !selectable) {
+            //change the target string to subscript
+            inlineSpan = WidgetSpan(
+              child: Transform.translate(
+                offset: const Offset(0, 2),
+                child: Text(
+                  cleanedUpString,
+                  // textScaleFactor: 0.7,
+                  textScaler: TextScaler.linear(0.7),
+                  style: pattern.style == null
+                      ? DefaultTextStyle.of(context!).style
+                      : pattern.style,
+                ),
+              ),
+            );
+          } else {
+            inlineSpan = TextSpan(
+              text: cleanedUpString,
+              recognizer: pattern.recognizer,
+              style: pattern.style == null
+                  ? DefaultTextStyle.of(context!).style
+                  : pattern.style,
+            );
+          }
+
+          ///add prefix/suffix InlineSpan
+          if (null != pattern.prefixInlineSpan) {
+            textSpanList.add(pattern.prefixInlineSpan!);
+          }
+          textSpanList.add(inlineSpan);
+          if (null != pattern.suffixInlineSpan) {
+            textSpanList.add(pattern.suffixInlineSpan!);
+          }
+        }
+      } else {
+        inlineSpan = TextSpan(
+          text: cleanedUpString,
+          style: subTextStyle,
+        );
+        textSpanList.add(inlineSpan);
+      }
+    });
+    return textSpanList;
+  }
+
   String replaceSpecialCharacters(str) {
     String tempStr = str;
     //\[]()^*+?.$-{}|!
@@ -388,6 +571,7 @@ class EasyRichText extends StatelessWidget {
     List<EasyRichTextPattern> finalTempPatternList = [];
     List<EasyRichTextPattern> finalTempPatternList2 = [];
     List<String> strList = [];
+    // ignore: unused_local_variable
     bool unicode = true;
 
     if (tempPatternList.isEmpty) {
@@ -395,20 +579,21 @@ class EasyRichText extends StatelessWidget {
     } else {
       tempPatternList.asMap().forEach((index, pattern) {
         ///if targetString is a list
-        // if (pattern.targetPatternString is List<String>) {
-        //   pattern.targetPatternString.asMap().forEach((index, eachTargetString) {
-        //     finalTempPatternList.add(pattern.copyWith(targetString: eachTargetString));
-        //   });
-        // } else {
-        finalTempPatternList.add(pattern);
-        // }
+        if (pattern.targetString is List<String>) {
+          pattern.targetString.asMap().forEach((index, eachTargetString) {
+            finalTempPatternList
+                .add(pattern.copyWith(targetString: eachTargetString));
+          });
+        } else {
+          finalTempPatternList.add(pattern);
+        }
       });
 
       finalTempPatternList.asMap().forEach((index, pattern) {
         if (pattern.hasSpecialCharacters) {
           unicode = false;
           String newTargetString =
-              replaceSpecialCharacters(pattern.internalTargetString);
+              replaceSpecialCharacters(pattern.targetString);
           finalTempPatternList2
               .add(pattern.copyWith(targetString: newTargetString));
         } else {
@@ -419,95 +604,11 @@ class EasyRichText extends StatelessWidget {
       strList = processStrList(finalTempPatternList2, temText);
     }
 
-    List<InlineSpan> textSpanList = [];
-    strList.forEach((str) {
-      var inlineSpan;
-      int targetIndex = -1;
-      RegExpMatch? match;
-      var cleanedUpString = str;
-
-      if (tempPatternList.isNotEmpty) {
-        finalTempPatternList2.asMap().forEach((index, pattern) {
-          String targetString = pattern.finalString;
-          cleanedUpString = cleanedUpString.replaceAll(
-              pattern.internalTargetPatternStart, '');
-          cleanedUpString =
-              cleanedUpString.replaceAll(pattern.internalTargetPatternEnd, '');
-          //\$, match end
-          RegExp targetStringExp = RegExp(
-            '^$targetString\$',
-            caseSensitive: caseSensitive,
-            unicode: unicode,
-          );
-
-          RegExpMatch? tempMatch = targetStringExp.firstMatch(str);
-          if (tempMatch is RegExpMatch) {
-            targetIndex = index;
-            match = tempMatch;
-          }
-        });
-      }
-
-      ///If str is targetString
-      if (targetIndex > -1) {
-        //if str is url
-        var pattern = finalTempPatternList2[targetIndex];
-        var urlType = pattern.urlType;
-
-        if (null != pattern.matchBuilder && match is RegExpMatch) {
-          inlineSpan = pattern.matchBuilder!(context, match);
-        } else if (urlType != null) {
-          inlineSpan = TextSpan(
-            text: cleanedUpString,
-            recognizer: tapGestureRecognizerForUrls(str, urlType),
-            style: pattern.style == null
-                ? DefaultTextStyle.of(context).style
-                : pattern.style,
-          );
-        } else if (pattern.superScript && !selectable) {
-          //change the target string to superscript
-          inlineSpan = WidgetSpan(
-            child: Transform.translate(
-              offset: const Offset(0, -5),
-              child: Text(
-                cleanedUpString,
-                textScaleFactor: 0.7,
-                style: pattern.style == null
-                    ? DefaultTextStyle.of(context).style
-                    : pattern.style,
-              ),
-            ),
-          );
-        } else if (pattern.subScript && !selectable) {
-          //change the target string to subscript
-          inlineSpan = WidgetSpan(
-            child: Transform.translate(
-              offset: const Offset(0, 1),
-              child: Text(
-                cleanedUpString,
-                textScaleFactor: 0.7,
-                style: pattern.style == null
-                    ? DefaultTextStyle.of(context).style
-                    : pattern.style,
-              ),
-            ),
-          );
-        } else {
-          inlineSpan = TextSpan(
-            text: cleanedUpString,
-            recognizer: pattern.recognizer,
-            style: pattern.style == null
-                ? DefaultTextStyle.of(context).style
-                : pattern.style,
-          );
-        }
-      } else {
-        inlineSpan = TextSpan(
-          text: cleanedUpString,
-        );
-      }
-      textSpanList.add(inlineSpan);
-    });
+    List<InlineSpan> textSpanList = getTextSpanList(
+      context: context,
+      strList: strList,
+      finalTempPatternList2: finalTempPatternList2,
+    );
 
     if (selectable) {
       return SelectableText.rich(
@@ -517,12 +618,13 @@ class EasyRichText extends StatelessWidget {
                 : defaultStyle,
             children: textSpanList),
         scrollPhysics: scrollPhysics,
-        toolbarOptions: toolbarOptions,
+        contextMenuBuilder: contextMenuBuilder,
         maxLines: maxLines,
         strutStyle: strutStyle,
         textAlign: textAlign,
         textDirection: textDirection,
-        textScaleFactor: textScaleFactor,
+        // textScaleFactor: textScaleFactor,
+        textScaler: TextScaler.linear(textScaleFactor),
         textWidthBasis: textWidthBasis,
         selectionControls: selectionControls,
         textHeightBehavior: textHeightBehavior,
@@ -555,8 +657,10 @@ class EasyRichText extends StatelessWidget {
         strutStyle: strutStyle,
         textAlign: textAlign,
         textDirection: textDirection,
-        textScaleFactor: textScaleFactor,
+        // textScaleFactor: textScaleFactor,
+        textScaler: TextScaler.linear(textScaleFactor),
         textWidthBasis: textWidthBasis,
+        selectionColor: selectionColor,
       );
     }
   }

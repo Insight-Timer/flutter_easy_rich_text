@@ -2,11 +2,11 @@
 
 [![pub package](https://img.shields.io/pub/v/easy_rich_text.svg)](https://pub.dev/packages/easy_rich_text) [![GitHub license](https://img.shields.io/github/license/2000calories/flutter_easy_rich_text)](https://github.com/2000calories/flutter_easy_rich_text/blob/master/LICENSE) [![GitHub stars](https://img.shields.io/github/stars/2000calories/flutter_easy_rich_text)](https://github.com/2000calories/flutter_easy_rich_text/stargazers)
 
-The EasyRichText widget makes the RichText widget easy. You do not have to split the string manually.
+The `EasyRichText` widget makes the RichText widget easy. You do not have to split the string manually.
 
-This widget use regular expression to effectively split the string based on the patterns defined in the list of EasyRichTextPattern.
+This widget use regular expression to effectively split the string based on the patterns defined in the list of `EasyRichTextPattern`.
 
-The EasyRichTextPattern is a class defines the text pattern you want to format.
+The `EasyRichTextPattern` is a class defines the text pattern you want to format.
 
 `targetString` can be a `String` or a `List<String>`.
 
@@ -14,7 +14,7 @@ By default `matchWordBoundaries:true` is set to match the whole word. If you wan
 
 GestureRecognizer and url_launcher are integrated.
 
-If you find this package useful, I would appreciate it if you can give me a star on [Github](https://github.com/2000calories/flutter_easy_rich_text) or a like on [pub.dev](https://pub.dev/packages/easy_rich_text)
+If you find this package useful, I would appreciate it if you can give me a star on [Github](https://github.com/2000calories/flutter_easy_rich_text) and a like on [pub.dev](https://pub.dev/packages/easy_rich_text)
 
 ## Getting Started
 
@@ -22,7 +22,7 @@ If you find this package useful, I would appreciate it if you can give me a star
 
 ```yaml
 dependencies:
-  easy_rich_text: '^1.0.4'
+  easy_rich_text: '^2.0.0'
 ```
 
 ### Examples:
@@ -44,7 +44,7 @@ dependencies:
 
 #### Simple Example:
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/simple.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/simple.png)
 
 ```dart
 EasyRichText(
@@ -68,7 +68,7 @@ EasyRichText(
 
 #### Trademark Example
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/trademark.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/trademark.png)
 
 ```dart
 EasyRichText(
@@ -87,7 +87,7 @@ EasyRichText(
 
 #### Default Style:
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/default%20style.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/default%20style.png)
 
 ```dart
 EasyRichText(
@@ -108,7 +108,7 @@ EasyRichText(
 
 #### Conditional Match
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/conditional_match.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/conditional_match.png)
 
 ```dart
 EasyRichText(
@@ -126,7 +126,7 @@ EasyRichText(
 
 #### Match Option
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/match_option.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/match_option.png)
 
 ##### matchOption can be a string or a list. default is 'all'.
 
@@ -152,7 +152,7 @@ EasyRichText(
 
 #### Superscript and Subscript.
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/superscript_subscript.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/superscript_subscript.png)
 
 ```dart
 EasyRichText(
@@ -168,7 +168,7 @@ EasyRichText(
 
 #### Case Sensitivity
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/case%20sensitivity.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/case%20sensitivity.png)
 
 ```dart
 EasyRichText(
@@ -186,7 +186,7 @@ EasyRichText(
 
 #### Selectable Text
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/selectable.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/selectable.png)
 
 ```dart
 EasyRichText(
@@ -197,7 +197,7 @@ EasyRichText(
 
 #### Regular Expression
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/regular_expression.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/regular_expression.png)
 
 ```dart
 EasyRichText(
@@ -217,7 +217,7 @@ Integrated with url_launcher. Web url, email url, and telephone url are supporte
 Set urlType : 'web', 'email', or 'tel'.
 EasyRichText provides regular expression formula to match common urls.
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/urls.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/urls.png)
 
 ```dart
 EasyRichText(
@@ -279,7 +279,7 @@ EasyRichText(
 
 #### All RichText Properties
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/rich%20text%20overflow.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/rich%20text%20overflow.png)
 
 ```dart
 EasyRichText(
@@ -292,7 +292,7 @@ EasyRichText(
 
 #### Special Characters
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/special_characters.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/special_characters.png)
 
 ```dart
 //if the targetString contains the following special characters \[]()^*+?
@@ -316,7 +316,7 @@ EasyRichText(
 
 #### WhatsApp Like Text Formatter
 
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/WhatsApp_like_text_formatter.png)
+![alt text](https://raw.githubusercontent.com/2000calories/flutter_easy_rich_text/master/screen_shots/WhatsApp_like_text_formatter.png)
 
 ```dart
 ///WhatsApp like text formatter
@@ -326,10 +326,10 @@ EasyRichText(
     ///bold font
     EasyRichTextPattern(
       targetString: '(\\*)(.*?)(\\*)',
-      matchBuilder: (BuildContext context, RegExpMatch match) {
+      matchBuilder: (BuildContext context, RegExpMatch? match) {
         return TextSpan(
-          text: match[0].replaceAll('*', ''),
-          style: TextStyle(fontWeight: FontWeight.bold),
+          text: match?[0]?.replaceAll('*', ''),
+          style: const TextStyle(fontWeight: FontWeight.bold),
         );
       },
     ),
@@ -337,28 +337,21 @@ EasyRichText(
 ),
 ```
 
-### Known issues
-
-#### Conflict when one target string is included in another target string
-
-![alt text](https://github.com/2000calories/flutter_easy_rich_text/blob/master/screen_shots/known%20issue%201.png)
-
+#### prefixInlineSpan & suffixInlineSpan
 ```dart
+///add icon before/after targetString
 EasyRichText(
-  "This is a EasyRichText example. I want whole sentence blue. I want whole sentence bold.",
+  "Please contact us at +123456789",
   patternList: [
     EasyRichTextPattern(
-      targetString: 'I want whole sentence blue',
-      style: TextStyle(fontWeight: FontWeight.bold),
-    ),
-    EasyRichTextPattern(
-      targetString: 'blue',
-      style: TextStyle(color: Colors.blue),
-    ),
-    EasyRichTextPattern(
-      targetString: 'I want whole sentence bold',
-      style: TextStyle(fontWeight: FontWeight.bold),
-    ),
+      targetString: EasyRegexPattern.telPattern,
+      prefixInlineSpan: WidgetSpan(
+        child: Icon(Icons.local_phone),
+      ),
+      suffixInlineSpan: WidgetSpan(
+        child: Icon(Icons.local_phone),
+      ),
+    )
   ],
 ),
 ```
