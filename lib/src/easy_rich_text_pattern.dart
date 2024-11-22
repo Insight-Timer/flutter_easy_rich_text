@@ -1,8 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/widgets.dart';
 
-typedef EasyRichTextMatchBuilder = InlineSpan Function(
-    BuildContext context, RegExpMatch? match);
+typedef EasyRichTextMatchBuilder = InlineSpan Function(BuildContext context, RegExpMatch? match);
 typedef EasyPattern = EasyRichTextPattern;
 
 class EasyRichTextPattern {
@@ -65,9 +64,8 @@ class EasyRichTextPattern {
   ///InlineSpan widget after targetStriing
   final InlineSpan? suffixInlineSpan;
 
-  EasyRichTextPattern(
-      {
-       Key? key,
+  const EasyRichTextPattern(
+      {Key? key,
       required String targetString,
       required this.identifier,
       this.stringBeforeTarget = '',
@@ -84,7 +82,8 @@ class EasyRichTextPattern {
       this.matchOption = 'all',
       this.matchBuilder,
       this.prefixInlineSpan,
-      this.suffixInlineSpan}) : this.internalTargetString = targetStrin;
+      this.suffixInlineSpan})
+      : this.internalTargetString = targetStrin;
 
   EasyRichTextPattern copyWith({
     targetString,
@@ -111,10 +110,8 @@ class EasyRichTextPattern {
       stringBeforeTarget: stringBeforeTarget ?? this.stringBeforeTarget,
       stringAfterTarget: stringAfterTarget ?? this.stringAfterTarget,
       matchWordBoundaries: matchWordBoundaries ?? this.matchWordBoundaries,
-      matchLeftWordBoundary:
-          matchLeftWordBoundary ?? this.matchLeftWordBoundary,
-      matchRightWordBoundary:
-          matchRightWordBoundary ?? this.matchRightWordBoundary,
+      matchLeftWordBoundary: matchLeftWordBoundary ?? this.matchLeftWordBoundary,
+      matchRightWordBoundary: matchRightWordBoundary ?? this.matchRightWordBoundary,
       superScript: superScript ?? this.superScript,
       subScript: subScript ?? this.subScript,
       style: style ?? this.style,
@@ -146,8 +143,6 @@ class EasyRichTextPattern {
     if (identifier == null || identifier!.isEmpty) {
       return internalTargetString;
     }
-    return internalTargetPatternStart +
-        internalTargetString +
-        internalTargetPatternEnd;
+    return internalTargetPatternStart + internalTargetString + internalTargetPatternEnd;
   }
 }
