@@ -9,6 +9,7 @@ class EasyRichTextPatterns {
   static final bold = EasyRichTextPattern(
     targetString: EasyRegexPattern.boldPattern,
     matchWordBoundaries: false,
+    identifier: null,
     matchBuilder: (context, match) {
       return TextSpan(
         text: match?[0]?.substring(1, match[0]!.length - 1),
@@ -22,6 +23,7 @@ class EasyRichTextPatterns {
   static final italic = EasyRichTextPattern(
     targetString: EasyRegexPattern.italicPattern,
     matchWordBoundaries: false,
+    identifier: null,
     matchBuilder: (context, match) {
       return TextSpan(
         text: match?[0]?.substring(1, match[0]!.length - 1),

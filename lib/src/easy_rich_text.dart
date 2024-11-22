@@ -437,13 +437,13 @@ class EasyRichText extends StatelessWidget {
       finalTempPatternList2.asMap().forEach((temIndex, temPattern) {
         if (index != temIndex) {
           RegExp patternExp = RegExp(
-            pattern.targetString,
+            pattern.internalTargetString,
             caseSensitive: caseSensitive,
             unicode: unicode,
             multiLine: multiLine,
             dotAll: dotAll,
           );
-          bool hasMatch = patternExp.hasMatch(temPattern.targetString);
+          bool hasMatch = patternExp.hasMatch(temPattern.internalTargetString);
           if (hasMatch) {
             patternSubset.update(
               temIndex,
@@ -589,8 +589,8 @@ class EasyRichText extends StatelessWidget {
     } else {
       tempPatternList.asMap().forEach((index, pattern) {
         ///if targetString is a list
-        if (pattern.targetString is List<String>) {
-          pattern.targetString.asMap().forEach((index, eachTargetString) {
+        if (pattern.finalString is List<String>) {
+          (pattern.finalString as List<String>).asMap().forEach((index, eachTargetString) {
             finalTempPatternList.add(pattern.copyWith(targetString: eachTargetString));
           });
         } else {
@@ -601,7 +601,7 @@ class EasyRichText extends StatelessWidget {
       finalTempPatternList.asMap().forEach((index, pattern) {
         if (pattern.hasSpecialCharacters) {
           unicode = false;
-          String newTargetString = replaceSpecialCharacters(pattern.targetString);
+          String newTargetString = replaceSpecialCharacters(pattern.finalString);
           finalTempPatternList2.add(pattern.copyWith(targetString: newTargetString));
         } else {
           finalTempPatternList2.add(pattern);
